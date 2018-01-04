@@ -19,8 +19,6 @@ public class TestLinkedList {
 
     @Test
     public void get() {
-
-
         String listStr = list.toString();
         System.out.println(listStr);
         System.out.println();
@@ -60,6 +58,28 @@ public class TestLinkedList {
     }
 
     @Test
+    public void sortFromReverse() {
+        list.clear();
+        list.add(10);
+        list.add(9);
+        list.add(8);
+        list.add(7);
+        list.add(6);
+        list.add(5);
+        list.add(4);
+        list.add(3);
+        list.add(0);
+        list.add(-1);
+
+        System.out.println(list);
+        System.out.println();
+
+        list.sort();
+
+        System.out.println("Sorted List: " + list);
+    }
+
+    @Test
     public void insert() {
         list.insert(0, 0);
         System.out.println("Insertion 0: " + list);
@@ -92,9 +112,21 @@ public class TestLinkedList {
         System.out.println(list);
         System.out.println();
 
-        assertRemove(3);
-        assertRemove(2);
-        assertRemove(1);
+        TestUtils.assertRemove(list, 3);
+        TestUtils.assertRemove(list, 2);
+        TestUtils.assertRemove(list, 1);
+    }
+
+    @Test
+    public void removeAt() {
+        list.add(4);
+
+        System.out.println(list);
+        System.out.println();
+
+        TestUtils.assertRemoveAt(list,1,2);
+        TestUtils.assertRemoveAt(list,2,4);
+        TestUtils.assertRemoveAt(list,0,1);
     }
 
     @Test
@@ -111,15 +143,5 @@ public class TestLinkedList {
         System.out.println();
 
         assertTrue(list.isEmpty());
-    }
-
-    private void assertRemove(int removedVal) {
-        int val = list.remove();
-
-        System.out.println("Removed: " + val);
-        System.out.println(list);
-        System.out.println();
-
-        assertTrue(val == removedVal);
     }
 }

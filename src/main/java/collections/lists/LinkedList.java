@@ -1,12 +1,9 @@
 package collections.lists;
 
-import util.ReflectionUtils;
-
-import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //implements ILinkedList<T> {
+public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //implements ILinkedList<T> {
 
     //private final Class genericClass;
 
@@ -16,7 +13,8 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
 
     public LinkedList() { } //this.genericClass = ReflectionUtils.getGenericClass(this.getClass()); }
 
-    //@Override
+
+    @Override
     public void add(T val) {
         //create new node
         Node<T> node = new Node<T>(val);
@@ -44,7 +42,8 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
 
 
 
-    //@Override
+
+    @Override
     public void insert(T val, int index) {
         if (index < 0 || index > size)
             throw new IndexOutOfBoundsException("Insertion index (" + index + ") out of bounds");
@@ -67,17 +66,7 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
             //link node->next
             node.next = next;
         } else { //find the node at index specified
-            int i=0;
-            Node prev = null;
-
-            //iterate through the list and get the node previous to the insertion point
-            //if on the index break
-            while (i != index) {
-                //otherwise advance i
-                i++;
-                //set the prev node to next in the chain
-                prev = (prev == null) ? this.head : prev.next;
-            }
+            Node<T> prev = getNodeAt(index-1);
             //save prev.next to temp
             Node temp = prev.next;
             //link prev->node
@@ -88,58 +77,32 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
 
         size++;
 
-        //if inserting at 0 (head)
-//        if (index == 0) {
-//            //set head as next
-//            Node<T> next = this.head;
-//            //set node as head
-//            this.head = node;
-//            //link node to next
-//            node.next = next;
-//        } else if (index == size) { //if inserting at index==size
-//            //set tail as prev
-//            Node<T> prev = this.tail;
-//            //set node to tail
-//            this.tail = node;
-//            //link prev to tail
-//            prev.next = this.tail;
-//        } else { //if inserting in middle
-//            Node<T> prev = this.head;
-//            int i=1;
-//            //loop from head to insertion point
-//            while (i < index) {
-//                //set last node found before insertion point as prev
-//                prev = prev.next;
-//                i++;
-//            }
-//
-//            //get next from prev.next
-//            Node<T> next = prev.next;
-//            //link prev.next to node
-//            prev.next = node;
-//            //link node.next to next
-//            node.next = next;
-//        }
-//        size++;
     }
 
-    //@Override
-    public T get(int index) {
+
+    @Override
+    public T get(int index) { return getNodeAt(index).getVal(); }
+
+    private Node<T> getNodeAt(int index) {
         if (index < 0 || index >= size)
             throw new IllegalArgumentException(index + " is out of bounds");
 
         Node<T> node = this.head;
         for (int i=0; i<size; i++) {
             if (i == index)
-                return node.getVal();
+                return node;
             node = node.next;
         }
 
         throw new IllegalStateException("No node found at index " + index);
     }
 
-    //@Override
+
+    @Override
     public T remove() {
+        if (isEmpty())
+            return null;
+
         //Save tail val
         T val = tail.getVal();
 
@@ -166,7 +129,47 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
         return val;
     }
 
-    //@Override
+
+
+    @Override
+    public T removeAt(int index) {
+        if (index < 0 || index > size-1)
+            throw new IndexOutOfBoundsException("Insertion index (" + index + ") out of bounds");
+
+        //if removing at tail can call remove()
+        if (index == size-1)
+            return remove();
+
+        Node remove;
+        if (index == 0) {
+            //remove node is head
+            remove = this.head;
+            //new head is node after current head remove->next
+            Node head = remove.next;
+
+            //link new head
+            this.head = head;
+            //remove links on remove node
+            remove.next = null;
+        } else {
+            Node prev = getNodeAt(index - 1);
+            //remove node is prev->next
+            remove = prev.next;
+            //node after remove node is new orev->next
+            Node next = remove.next;
+
+            //link prev->next
+            prev.next = next;
+            //unlink remove
+            remove.next = null;
+        }
+
+        size--;
+        return (T) remove.getVal();
+    }
+
+
+    @Override
     public void reverse() {
         if (size < 2)
             return;
@@ -200,26 +203,23 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
     }
 
 
-    //@Override
+    @Override
     public void sort() {
         if (this.size <= 1)
             return; // no need to sort any list with less than two nodes
 
-        Node<T>[] arr = toArrayInternal(); //create an array
-        arr = mergeSort(arr); // do the sort
+        Node<T>[] nodes = toArrayInternal(); //create an array
+        nodes = mergeSort(nodes); // do the sort
 
-        //reconstruct the list from the sorted array
-        Node<T> n = null;
-        //set the first node as the new head
-        this.head = arr[0];
-        //loop through the nodes and link them
-        for (int i=0; i<size-1; i++) {
-            n = arr[i];
-            Node<T> next = arr[i+1];
-            n.next = next;
+        Node<T> prev = null;
+        for (int i=0; i<size; i++) {
+            Node<T> n = nodes[i];
+            if (i == 0) this.head = n;
+            if (prev != null) prev.next = n;
+            prev = n;
         }
 
-        this.tail = n.next; //set the last node as the new tail
+        this.tail = prev; //set the last node as the new tail
         this.tail.next = null; //tail shouldn't have a next
     }
 
@@ -274,17 +274,28 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
         return arr;
     }
 
-    //@Override
+
+    @Override
     public int size() {
         return size;
     }
 
-    //@Override
+
+    @Override
     public boolean isEmpty() {
         return size == 0;
     }
 
-    //@Override
+
+
+    @Override
+    public void clear() {
+        this.head = null;
+        this.tail = null;
+        size = 0;
+    }
+
+
 //    public T[] toArray() {
 //        T[] arr = (T[]) Array.newInstance(this.genericClass, this.size);
 //        int i = 0;
@@ -309,7 +320,7 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
     }
 
 
-    //@Override
+
     public String toString() {
         if (isEmpty())
             return "[]";
@@ -320,8 +331,11 @@ public class LinkedList<T extends Comparable<T>> implements Iterable<T> { //impl
         return sb.toString();
     }
 
-    //@Override
+
+    @Override
+    @SuppressWarnings("unchecked")
     public Iterator<T> iterator() {
+
         return new Iterator() {
             private Node<T> next = head;
 

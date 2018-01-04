@@ -1,14 +1,10 @@
 import bst.BinarySearchTree;
-import bst.BinarySearchTree2;
-import collections.lists.ILinkedList;
 import collections.lists.LinkedList;
-
-import java.util.List;
 
 public class Main {
 
     public static void main(String[] args) {
-        BinarySearchTree2<Integer> bst = new BinarySearchTree2<>(0);
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>(0);
 
         /*
                     0
@@ -59,6 +55,23 @@ public class Main {
         System.out.println("Balancing.....");
         bst.balance();
         System.out.println(bst);
+        System.out.println();
+
+        System.out.println("min:    " + bst.getMin());
+        System.out.println("max:    " + bst.getMax());
+        System.out.println("size:   " + bst.getSize());
+        System.out.println("height: " + bst.getHeight());
+        System.out.println();
+
+        System.out.println("Sorting.....");
+        bst.sort();
+        System.out.println(bst);
+        System.out.println();
+
+        System.out.println("min:    " + bst.getMin());
+        System.out.println("max:    " + bst.getMax());
+        System.out.println("size:   " + bst.getSize());
+        System.out.println("height: " + bst.getHeight());
         System.out.println();
     }
 

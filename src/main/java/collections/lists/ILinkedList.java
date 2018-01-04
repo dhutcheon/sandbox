@@ -2,17 +2,19 @@ package collections.lists;
 
 import java.util.Iterator;
 
+public interface ILinkedList<T extends Comparable<T>> extends Iterable<T> {
 
-public interface ILinkedList<T extends Comparable<? super T>> extends Iterable<T> {
-    boolean add(T val);
+    void add(T val);
+
+    void insert(T val, int index);
 
     T get(int index);
 
     T remove();
 
-    void reverse();
+    T removeAt(int index);
 
-    void insert(T val, int index);
+    void reverse();
 
     void sort();
 
@@ -20,11 +22,9 @@ public interface ILinkedList<T extends Comparable<? super T>> extends Iterable<T
 
     boolean isEmpty();
 
-    T[] toArray();
 
-    @Override
-    String toString();
-
-    @Override
+    @SuppressWarnings("unchecked")
     Iterator<T> iterator();
+
+    void clear();
 }

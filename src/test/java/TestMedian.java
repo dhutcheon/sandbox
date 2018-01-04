@@ -44,13 +44,8 @@ public class TestMedian {
         int[] sorted = SortUtils.mergeSortOrderedArrays(arr1,arr2);
         print("sorted", sorted);
 
-        final int[] prev = {sorted[0]};
-        Arrays.stream(sorted).forEach(i -> {
-            assertTrue(prev[0] <= i);
-            prev[0] = i;
-        });
+        TestUtils.assertSorted(sorted);
     }
-
 
     private void assertMedian(int[] arr1, int[] arr2, float assertVal) {
         print("arr1", arr1);
