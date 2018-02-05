@@ -4,7 +4,7 @@ import collections.lists.LinkedList;
 public class Main {
 
     public static void main(String[] args) {
-        BinarySearchTree<Integer> bst = new BinarySearchTree<>(0);
+        BinarySearchTree<Integer> bst = new BinarySearchTree<>(Integer.class, 0);
 
         /*
                     0

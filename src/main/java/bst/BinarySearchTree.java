@@ -7,8 +7,9 @@ import util.ReflectionUtils;
 
 
 public class BinarySearchTree<T extends Comparable<T>> {
+    private final Class<T> genericClass;
 
-    //private final Class<?> genericClass;
+    private Class<BSTNode<T>> nodeClass;
 
     private BSTNode<T> root;
 
@@ -19,8 +20,8 @@ public class BinarySearchTree<T extends Comparable<T>> {
 
     //private HashMap<Integer, Integer> rowWidth = new HashMap<>();
 
-    public BinarySearchTree() { } //this.genericClass = ReflectionUtils.getGenericClass(this.getClass()); }
-    public BinarySearchTree(T initialValue) { this(); insert(initialValue); }
+    public BinarySearchTree(Class<T> cls) { this.genericClass = cls; }
+    public BinarySearchTree(Class<T> cls, T initialValue) { this(cls); insert(initialValue); }
 
     public void insert(T val) {
         if (val == null)
@@ -94,7 +95,7 @@ public class BinarySearchTree<T extends Comparable<T>> {
          */
         LinkedList<T> list = toLinkedList();
         list.sort();
-        BinarySearchTree<T> tree = new BinarySearchTree<>();
+        BinarySearchTree<T> tree = new BinarySearchTree<>(genericClass);
         balanceInternal(tree, list, 0, list.size() - 1);
         this.root = tree.root;
     }
@@ -226,13 +227,15 @@ public class BinarySearchTree<T extends Comparable<T>> {
     }
 
     public LinkedList<T> toLinkedList() {
-        LinkedList<T> list = new LinkedList<T>();
+        LinkedList<T> list = new LinkedList<T>(this.genericClass);
         buildListInternal(this.root, list, false);
         return list;
     }
 
     private LinkedList<BSTNode<T>> toLinkedListOfNodes() {
-        LinkedList<BSTNode<T>> list = new LinkedList<>();
+        if (this.nodeClass == null)
+            this.nodeClass = (Class<BSTNode<T>>) this.root.getClass();
+        LinkedList<BSTNode<T>> list = new LinkedList<>(this.nodeClass);
         buildListInternal(this.root, list, true);
         return list;
     }

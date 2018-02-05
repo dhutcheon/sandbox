@@ -1,4 +1,7 @@
+package _testing;
+
 import collections.lists.ILinkedList;
+import util.ReflectionUtils;
 
 import java.util.Arrays;
 
@@ -6,13 +9,25 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class TestUtils {
 
-    public static void assertSorted(int[] array) {
-        final int[] prev = {array[0]};
+    public static void assertSorted(ILinkedList<Integer> list) {
+        Integer[] array = list.toArray();
+        final Comparable<Integer>[] prev = new Comparable[]{array[0]};
         Arrays.stream(array).forEach(i -> {
-            assertTrue(prev[0] <= i);
+            //assertTrue(prev[0] <= i);
+            assertTrue(ReflectionUtils.gt(i, prev[0]) || ReflectionUtils.eq(i, prev[0]));
             prev[0] = i;
         });
     }
+
+    public static void assertSorted(int[] array) {
+        final int[] prev = new int[]{array[0]};
+        Arrays.stream(array).forEach(i -> {
+            //assertTrue(prev[0] <= i);
+            assertTrue(ReflectionUtils.gt(i, prev[0]) || ReflectionUtils.eq(i, prev[0]));
+            prev[0] = i;
+        });
+    }
+
 
 
 

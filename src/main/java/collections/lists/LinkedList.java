@@ -1,39 +1,43 @@
 package collections.lists;
 
+import org.springframework.core.GenericTypeResolver;
+
+import java.lang.reflect.Array;
 import java.util.Iterator;
 import java.util.Stack;
 
-public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //implements ILinkedList<T> {
+public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> {
 
-    //private final Class genericClass;
-
-    private Node<T> head;
-    private Node<T> tail;
+    private LinkedListNode<T> head;
+    private LinkedListNode<T> tail;
     private int size = 0;
+    private Class<T> genericClass;
 
-    public LinkedList() { } //this.genericClass = ReflectionUtils.getGenericClass(this.getClass()); }
+    public LinkedList(Class<T> cls) {
+        this.genericClass = cls;
+    }
 
 
     @Override
     public void add(T val) {
-        //create new node
-        Node<T> node = new Node<T>(val);
+        //create new linkedListNode
+        LinkedListNode<T> linkedListNode = new LinkedListNode<T>(val);
         //if the list is empty
         if (size == 0) {
-            //set head new node
-            this.head = node;
-            //set tail as new node
-            this.tail = node;
+            //set head new linkedListNode
+            this.head = linkedListNode;
+            //set tail as new linkedListNode
+            this.tail = linkedListNode;
         } else if (size == 1) { //if the list is size 1
-            //set the tail to the new node
-            this.tail = node;
-            //link head to new node
-            this.head.next = node;
+            //set the tail to the new linkedListNode
+            this.tail = linkedListNode;
+            //link head to new linkedListNode
+            this.head.next = linkedListNode;
         } else { //if the list size > 1
-            //link the old tail to the new node
-            this.tail.next = node;
-            //set the new node as tail
-            this.tail = node;
+            //link the old tail to the new linkedListNode
+            this.tail.next = linkedListNode;
+            //set the new linkedListNode as tail
+            this.tail = linkedListNode;
         }
 
         //increment size
@@ -54,25 +58,25 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
             return;
         }
 
-        //create new node from val
-        Node<T> node = new Node<>(val);
+        //create new linkedListNode from val
+        LinkedListNode<T> linkedListNode = new LinkedListNode<>(val);
 
         //if inserting at head
         if (index == 0) {
             //get old head as next
-            Node next = this.head;
-            //set head from node
-            this.head = node;
-            //link node->next
-            node.next = next;
-        } else { //find the node at index specified
-            Node<T> prev = getNodeAt(index-1);
+            LinkedListNode next = this.head;
+            //set head from linkedListNode
+            this.head = linkedListNode;
+            //link linkedListNode->next
+            linkedListNode.next = next;
+        } else { //find the linkedListNode at index specified
+            LinkedListNode<T> prev = getNodeAt(index-1);
             //save prev.next to temp
-            Node temp = prev.next;
-            //link prev->node
-            prev.next = node;
-            //link node->temp
-            node.next = temp;
+            LinkedListNode temp = prev.next;
+            //link prev->linkedListNode
+            prev.next = linkedListNode;
+            //link linkedListNode->temp
+            linkedListNode.next = temp;
         }
 
         size++;
@@ -83,18 +87,18 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
     @Override
     public T get(int index) { return getNodeAt(index).getVal(); }
 
-    private Node<T> getNodeAt(int index) {
+    private LinkedListNode<T> getNodeAt(int index) {
         if (index < 0 || index >= size)
             throw new IllegalArgumentException(index + " is out of bounds");
 
-        Node<T> node = this.head;
+        LinkedListNode<T> linkedListNode = this.head;
         for (int i=0; i<size; i++) {
             if (i == index)
-                return node;
-            node = node.next;
+                return linkedListNode;
+            linkedListNode = linkedListNode.next;
         }
 
-        throw new IllegalStateException("No node found at index " + index);
+        throw new IllegalStateException("No linkedListNode found at index " + index);
     }
 
 
@@ -113,12 +117,12 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
             //set tail to null
             this.tail = null;
         } else { //if size > 1
-            Node<T> node = this.head;
-            //iterate from head to tail until tail node is found
-            while (node.next != this.tail)
-                node = node.next;
-            //set node to tail
-            this.tail = node;
+            LinkedListNode<T> linkedListNode = this.head;
+            //iterate from head to tail until tail linkedListNode is found
+            while (linkedListNode.next != this.tail)
+                linkedListNode = linkedListNode.next;
+            //set linkedListNode to tail
+            this.tail = linkedListNode;
             //remove the link to the tail
             this.tail.next = null;
         }
@@ -140,23 +144,23 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
         if (index == size-1)
             return remove();
 
-        Node remove;
+        LinkedListNode remove;
         if (index == 0) {
             //remove node is head
             remove = this.head;
             //new head is node after current head remove->next
-            Node head = remove.next;
+            LinkedListNode head = remove.next;
 
             //link new head
             this.head = head;
             //remove links on remove node
             remove.next = null;
         } else {
-            Node prev = getNodeAt(index - 1);
+            LinkedListNode prev = getNodeAt(index - 1);
             //remove node is prev->next
             remove = prev.next;
             //node after remove node is new orev->next
-            Node next = remove.next;
+            LinkedListNode next = remove.next;
 
             //link prev->next
             prev.next = next;
@@ -177,7 +181,7 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
         //Create stack of T
         Stack<T> stack = new Stack<>();
         //Set pointer to head
-        Node<T> n = head;
+        LinkedListNode<T> n = head;
         //while pointer != null
         while (n != null) {
             //get val of pointer
@@ -206,14 +210,14 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
     @Override
     public void sort() {
         if (this.size <= 1)
-            return; // no need to sort any list with less than two nodes
+            return; // no need to sort any list with less than two linkedListNodes
 
-        Node<T>[] nodes = toArrayInternal(); //create an array
-        nodes = mergeSort(nodes); // do the sort
+        LinkedListNode<T>[] linkedListNodes = toArrayInternal(); //create an array
+        linkedListNodes = mergeSort(linkedListNodes); // do the sort
 
-        Node<T> prev = null;
+        LinkedListNode<T> prev = null;
         for (int i=0; i<size; i++) {
-            Node<T> n = nodes[i];
+            LinkedListNode<T> n = linkedListNodes[i];
             if (i == 0) this.head = n;
             if (prev != null) prev.next = n;
             prev = n;
@@ -223,15 +227,15 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
         this.tail.next = null; //tail shouldn't have a next
     }
 
-    private Node<T>[] mergeSort(Node<T>[] arr) {
+    private LinkedListNode<T>[] mergeSort(LinkedListNode<T>[] arr) {
         int n = arr.length;
         if (n == 1)
             return arr;
 
         int mid = n/2;
         int rLength = n - mid;
-        Node<T>[] left = new Node[mid];
-        Node<T>[] right = new Node[rLength];
+        LinkedListNode<T>[] left = new LinkedListNode[mid];
+        LinkedListNode<T>[] right = new LinkedListNode[rLength];
 
         int i = 0, l = 0, r =0;
         while (i < mid) {
@@ -247,11 +251,11 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
         return merge(left, right);
     }
 
-    private Node<T>[] merge(Node<T>[] left, Node<T>[] right) {
+    private LinkedListNode<T>[] merge(LinkedListNode<T>[] left, LinkedListNode<T>[] right) {
         int lLength = left.length;
         int rLength = right.length;
         int length = lLength + rLength;
-        Node<T>[] arr = new Node[length];
+        LinkedListNode<T>[] arr = new LinkedListNode[length];
 
         int i = 0, r = 0, l = 0;
         while (i < length) {
@@ -295,20 +299,24 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
         size = 0;
     }
 
+    @Override
+    public T[] toArray() {
+        if (this.genericClass == null) {
+            this.genericClass = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), ILinkedList.class);
+        }
+        T[] arr = (T[]) Array.newInstance(this.genericClass, this.size);
+        int i = 0;
+        Iterator<T> iterator = this.iterator();
+        while (iterator.hasNext()) {
+            arr[i] = (T)iterator.next();
+            i++;
+        }
+        return arr;
+    }
 
-//    public T[] toArray() {
-//        T[] arr = (T[]) Array.newInstance(this.genericClass, this.size);
-//        int i = 0;
-//        while (this.iterator().hasNext()) {
-//            arr[i] = this.iterator().next();
-//            i++;
-//        }
-//        return arr;
-//    }
-
-    private Node<T>[] toArrayInternal() {
-        Node<T>[] arr = new Node[this.size];
-        Node<T> n = this.head;
+    private LinkedListNode<T>[] toArrayInternal() {
+        LinkedListNode<T>[] arr = new LinkedListNode[this.size];
+        LinkedListNode<T> n = this.head;
         int i=0;
         while (n != null) {
             arr[i] = n;
@@ -324,10 +332,20 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
     public String toString() {
         if (isEmpty())
             return "[]";
-        StringBuilder sb = new StringBuilder();
-        sb.append("[");
-        this.forEach(t -> sb.append(t + ", "));
-        sb.replace(sb.length()-2,sb.length(),"]");
+
+        StringBuilder sb = new StringBuilder("[");
+        int i = 0;
+        Iterator<T> iterator = iterator();
+        while (iterator.hasNext()) {
+            T val = iterator.next();
+            sb.append(val);
+
+            if (i != size-1)
+                sb.append(", ");
+            i++;
+        }
+
+        sb.append("]");
         return sb.toString();
     }
 
@@ -337,7 +355,7 @@ public class LinkedList<T extends Comparable<T>> implements ILinkedList<T> { //i
     public Iterator<T> iterator() {
 
         return new Iterator() {
-            private Node<T> next = head;
+            private LinkedListNode<T> next = head;
 
             @Override
             public boolean hasNext() {

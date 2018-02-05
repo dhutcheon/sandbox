@@ -1,3 +1,5 @@
+package strings;
+
 import org.junit.jupiter.api.Test;
 import strings.PatternMatch;
 

@@ -27,4 +27,6 @@ public interface ILinkedList<T extends Comparable<T>> extends Iterable<T> {
     Iterator<T> iterator();
 
     void clear();
+
+    T[] toArray();
 }
